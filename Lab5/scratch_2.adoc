@@ -1,0 +1,94 @@
+:imagesdir: Imagesss
+:toc:
+:toc-title: Оглавление
+= Лабораторная работа №5
+== Выполнил: Истомин С.В.
+
+== Задание
+
+1)Тактирование системной частоты произвести с модуля PLL, так, чтобы системная частота была 30 МГц.
+
+== Решение
+
+На вход PLL поступает сигнал с внутреннего генератора HSI, f(HSI) = 16 МГц.
+PLLP по умолчанию равняется 2, тогда требуемую частоту f(PLL) = 30 МГц обеспечит выбор PLLN=75, PLLM = 20, так как
+
+[source, cpp]
+(16*75)/(2*20)=30
+
+При отладке были внесены изменения в файлы rccregisters.hpp и rccfieldvalues.hpp.
+
+В файле rccregisters.hpp:
+
+[source, cpp]
+struct PLLCFGR : public RegisterBase<0x40023804, 32, ReadWriteMode>
+{
+ using PLLQ0 = RCC_PLLCFGR_PLLQ_Values<RCC::PLLCFGR, 24, 4, ReadWriteMode, RCCPLLCFGRBase> ;
+ using PLLSRC = RCC_PLLCFGR_PLLSRC_Values<RCC::PLLCFGR, 22, 1, ReadWriteMode, RCCPLLCFGRBase> ;
+ using PLLP0 = RCC_PLLCFGR_PLLP_Values<RCC::PLLCFGR, 16, 2, ReadWriteMode, RCCPLLCFGRBase> ;
+ using PLLN0 = RCC_PLLCFGR_PLLN_Values<RCC::PLLCFGR, 6, 9, ReadWriteMode, RCCPLLCFGRBase> ;
+ using PLLM0 = RCC_PLLCFGR_PLLM_Values<RCC::PLLCFGR, 0, 5, ReadWriteMode, RCCPLLCFGRBase> ;
+}
+
+Во файле rccfieldvalues.hpp:
+
+[source, cpp]
+struct RCC_CR_PLLRDY_Values: public RegisterField<Reg, offset, size, AccessMode>
+{
+using NotReady = FieldValue<RCC_CR_PLLRDY_Values, BaseType, 0U> ;
+using Ready = FieldValue<RCC_CR_PLLRDY_Values, BaseType, 1U> ;
+}
+
+== Код программы на подключение системы ФАПЧ PLL частатой 30МГц
+
+[source, cpp]
+#include "gpioaregisters.hpp" //for GPIOC
+#include "gpiocregisters.hpp" //for GPIOC
+#include "rccregisters.hpp" //for RCC
+std::uint32_t SystemCoreClock = 16'000'000U;
+extern "C" {
+int __low_level_init(void)
+{
+while (RCC::CR::HSIRDY::NotReady::IsSet());
+RCC::PLLCFGR::PLLN0::Set(75);
+RCC::PLLCFGR::PLLM0::Set(20);
+RCC::CR::PLLON::On::Set();
+while(RCC::CR::PLLRDY::NotReady::IsSet());
+RCC::CFGR::SW::Pll::Set();
+while(!RCC::CFGR::SWS::Pll::IsSet());
+}
+}
+void delay (int cycles)
+{
+for(int i=0; i < cycles; ++i)
+{
+asm volatile ("");
+}
+}
+int main()
+{
+RCC::AHB1ENR::GPIOAEN::Enable::Set();
+GPIOA::MODER::MODER5::Output::Set();
+RCC::AHB1ENR::GPIOCEN::Enable::Set();
+GPIOC::MODER::MODER5::Output::Set();
+GPIOC::MODER::MODER8::Output::Set();
+GPIOC::MODER::MODER9::Output::Set();
+for(;;)
+{
+uint32_t* ptrPaOdr = reinterpret_cast<uint32_t*>(0x40020014);
+uint32_t* ptrPcOdr = reinterpret_cast<uint32_t*>(0x40020814);
+*ptrPaOdr ^= static_cast<uint32_t>(1 << 5);
+*ptrPcOdr ^= static_cast<uint32_t>((1 << 5) | (1 << 8) | (1 << 9));
+delay(1000000);
+*ptrPaOdr ^= static_cast<uint32_t>(1 << 5);
+*ptrPcOdr ^= static_cast<uint32_t>((1 << 5) | (1 << 8) | (1 << 9));
+delay(1000000);
+}
+return 1;
+}
+
+Видно что на плате наблюдается мигание светодиодов с более высокой частотой.
+
+image::IMG_6513.gif[]
+
+
