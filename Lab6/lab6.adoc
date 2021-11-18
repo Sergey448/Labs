@@ -91,4 +91,4 @@ return 1;
 }
 
 == Результат программы
-image::IMG_6650.gif[]
+image::lab(1).gif[]
