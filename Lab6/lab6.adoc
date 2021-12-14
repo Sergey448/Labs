@@ -68,7 +68,7 @@ for(;;)
   {
     if ((GPIOC::IDR::IDR13::Low::IsSet()) && (flag == 0))
       {
-        delay1(3000000);
+        delay1(300000);
         GPIOA::ODR::ODR5::High::Set();
         GPIOC::ODR::ODR5::High::Set();
         GPIOC::ODR::ODR8::High::Set();
@@ -78,7 +78,7 @@ for(;;)
       }
     if ((GPIOC::IDR::IDR13::Low::IsSet()) && (flag == 1) )
       {
-        delay1(3000000);
+        delay1(300000);
         GPIOA::ODR::ODR5::Low::Set();
         GPIOC::ODR::ODR5::Low::Set();
         GPIOC::ODR::ODR8::Low::Set();
