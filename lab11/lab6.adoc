@@ -1,4 +1,4 @@
-﻿:imagesdir: Imagesss
+:figure-caption: Рисунок
 :toc:
 :toc-title: Оглавление
 = Лабораторная работа №1
@@ -100,12 +100,6 @@ static void DummyHandler() { for(;;) {} }
       }
     }
 
-
-
-= *Результат* +
-
-.Результат программы
-image::Work1.gif[]
 
 
 Задача: 
@@ -303,3 +297,8 @@ int main()
   }
   return 0 ;
 }
+
+= *Результат* +
+
+.Результат программы
+image::Work1.gif[]
