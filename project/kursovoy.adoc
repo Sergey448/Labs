@@ -107,7 +107,7 @@ PIN26
 Accessory Shield - это плата расширения совместимая с популярными платформами для разработки электронных приложений, такими как Arduino UNO, Arduino Leonardo, NUCLEO, XNUCLEO и совместимыми.
 
 
-image::one.jpg[]
+image::one.png[]
 Рисунок 2. Вид платы XNUCLEO-F411RE.
 
 
