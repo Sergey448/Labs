@@ -181,7 +181,7 @@ XBee от MaxStream - это модуль беспроводной связи, �
 
 * Кнопки WIFI-LPT100 RELOAD, XBee и WIFI-LPT100 RESET, XBee EASYLINK.
 
-image::three.jpg[]
+image::three.jpg[800x800]
 Рисунок 3. Плата IO Expansion Shield
 
 
